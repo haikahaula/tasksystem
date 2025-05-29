@@ -10,6 +10,8 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <!-- Font Awesome CDN -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-yxQFHZwz5E2z2eR7LZbZoXU4y6Dd1E64UYOuypND+7HXc13+6hPb7JzrYx1Bd8O+HkJXzHtp2zpKtvwOAA6LVA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -23,6 +25,10 @@
                 <div class="max-w-7xl mx-auto flex space-x-4">
                     <a href="{{ route('tasks.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">All Tasks</a>
                     <a href="{{ route('tasks.create') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Create Task</a>
+                    <a href="{{ route('groups.create') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Create Group</a>
+
+                    <a href="{{ route('groups.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Groups</a> 
+
                 </div>
             </nav>
 

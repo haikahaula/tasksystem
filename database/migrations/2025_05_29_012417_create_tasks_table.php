@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('assigned_to_id')->nullable();
+            $table->string('assigned_to_type')->nullable();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->unsignedBigInteger('assigned_to_id');
             $table->date('due_date');
             $table->string('document')->nullable();
             $table->timestamps();
-
             $table->foreign('assigned_to_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

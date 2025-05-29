@@ -8,16 +8,35 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description', 'assigned_to_id', 'due_date', 'document'];
+        protected $fillable = [
+            'title',
+            'description',
+            'due_date',
+            'document',
+            'assigned_to_id',
+            'assigned_to_type'
+        ];
 
     public function assignedTo()
     {
-        return $this->belongsTo(User::class, 'assigned_to_id');    
+        return $this->morphTo();
     }
 
         public function comments()
     {
         return $this->hasMany(Comment::class);    
     }
+
+
+        public function users()
+    {
+            return $this->belongsToMany(User::class);
+    }
+
+        public function group()
+    {
+            return $this->belongsTo(Group::class); // or belongsToMany if multiple groups
+    }
+
 
 }

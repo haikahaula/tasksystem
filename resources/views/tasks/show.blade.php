@@ -7,7 +7,7 @@
     <p><strong>Description:</strong> {{ $task->description }}</p>
     <p><strong>Assigned To:</strong> {{ $task->assignedTo->name ?? 'N/A' }}</p>
     <p><strong>Due Date:</strong> {{ $task->due_date }}</p>
-    <p><strong>Document:</strong>
+    <p><strong>Document:</strong> 
         @if ($task->document)
             <a href="{{ asset('storage/' . $task->document) }}" target="_blank">View Document</a>
         @else
@@ -21,11 +21,9 @@
     <hr>
 
     <h2>Comments</h2>
-
-    @foreach ($task->comments as $comment)
+    @forelse ($task->comments as $comment)
         <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-            <p><strong>{{ $comment->user->name }}:</strong></p>
-            <p>{{ $comment->content }}</p>
+            <p><strong>{{ $comment->user->name }}:</strong> {{ $comment->content }}</p>
 
             @if ($comment->user_id === auth()->id())
                 <a href="{{ route('comments.edit', $comment->id) }}">Edit</a> |
@@ -36,7 +34,9 @@
                 </form>
             @endif
         </div>
-    @endforeach
+    @empty
+        <p>No comments yet.</p>
+    @endforelse
 
     <h3>Add Comment</h3>
     <form action="{{ route('comments.store', $task->id) }}" method="POST">

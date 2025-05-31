@@ -12,28 +12,46 @@ class AcademicStaffController extends Controller
 {
     public function dashboard()
     {
-        return view('academic-staff.dashboard');
+        return view('academic_staff.dashboard');
     }
 
-public function viewTasks()
-{
-        $user = Auth::user();    
-        $userId = $user ? $user->id : null;
+    public function viewTasks()
+    {
+        $userId = Auth::id();
 
+        $tasks = Task::where('assigned_to_id', $userId)
+            ->orWhereHas('group.users', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->with(['group', 'assignedBy'])
+            ->get();
 
-    $tasks = Task::where('assigned_to_id', $userId)
-        ->orWhereHas('group.users', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })
-        ->with(['group', 'assignedBy'])
-        ->get();
-
-    return view('academic_staff.view_tasks', compact('tasks'));
-}
+        return view('academic_staff.tasks', compact('tasks'));
+    }
 
     public function viewGroups()
     {
-        $groups = Group::all(); // You can filter this later
-        return view('academic-staff.view-groups', compact('groups'));
+        $userId = Auth::id();
+
+        $groups = Group::whereHas('users', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->withCount('users')
+            ->get();
+
+        return view('academic_staff.groups.index', compact('groups'));
+    }
+
+    public function showGroup($id)
+    {
+        $userId = Auth::id();
+
+        $group = Group::whereHas('users', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->with(['users', 'creator'])
+            ->findOrFail($id);
+
+        return view('academic_staff.groups.show', compact('group'));
     }
 }

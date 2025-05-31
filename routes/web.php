@@ -35,13 +35,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/groups/create', [GroupController::class, 'create'])->name('groups.create');
 
 
-
+    //academic staff 
     Route::prefix('academic-staff')->group(function () {
         Route::get('/dashboard', [AcademicStaffController::class, 'dashboard'])->name('academic-staff.dashboard');
+
+        //tasks
         Route::get('/tasks', [AcademicStaffController::class, 'viewTasks'])->name('academic-staff.tasks.index');
         Route::get('/tasks/{id}', [AcademicStaffController::class, 'show'])->name('academic-staff.tasks.show');
         Route::get('/tasks/{id}/edit', [AcademicStaffController::class, 'edit'])->name('academic-staff.tasks.edit');
-});
+
+        //group
+        Route::get('/groups', [AcademicStaffController::class, 'viewGroups'])->name('academic-staff.groups.index');
+        Route::get('/groups/{id}', [AcademicStaffController::class, 'showGroup'])->name('academic-staff.groups.show');
+
+    });
 });
 
 

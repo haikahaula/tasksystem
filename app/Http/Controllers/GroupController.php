@@ -80,4 +80,7 @@ class GroupController extends Controller
             return redirect()->route('groups.index')->with('success', 'Group deleted.');
         }
 
+        public function creator()
+        {
+        }
 }

@@ -27,11 +27,10 @@ class Task extends Model
         return $this->morphTo();
     }
 
-        public function assignedBy()
+    public function assignedBy()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-
 
         public function comments()
     {
@@ -44,8 +43,8 @@ class Task extends Model
             return $this->belongsToMany(User::class);
     }
 
-        public function group()
+    public function group()
     {
-            return $this->belongsTo(Group::class); // or belongsToMany if multiple groups
+        return $this->belongsTo(Group::class);
     }
 }

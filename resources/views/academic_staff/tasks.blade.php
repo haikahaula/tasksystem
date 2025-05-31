@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.bootstrap')
 
 @section('content')
-    <h1 class="text-2xl font-bold mb-4">Tasks Assigned by Academic Head</h1>
+    <h1 class="text-2xl font-bold mb-4">List of Tasks</h1>
 
     <table class="table-auto w-full border">
         <thead>

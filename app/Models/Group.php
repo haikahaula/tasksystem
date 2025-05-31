@@ -11,7 +11,7 @@ class Group extends Model
     // Many-to-Many relationship with users
         public function users()
         {
-            return $this->belongsToMany(User::class);        
+            return $this->belongsToMany(User::class);
         }
 
         public function comments()
@@ -19,5 +19,10 @@ class Group extends Model
             return $this->hasMany(Comment::class);
         }
         
+        public function creator()
+        {
+            return $this->belongsTo(User::class, 'created_by');
+        }
+
 
 }

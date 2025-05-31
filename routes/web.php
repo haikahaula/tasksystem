@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\AcademicStaffController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,6 +34,16 @@ Route::middleware('auth')->group(function () {
     Route::resource('groups', GroupController::class)->middleware(['auth']);
     Route::get('/groups/create', [GroupController::class, 'create'])->name('groups.create');
 
+
+
+    Route::prefix('academic-staff')->group(function () {
+        Route::get('/dashboard', [AcademicStaffController::class, 'dashboard'])->name('academic-staff.dashboard');
+        Route::get('/tasks', [AcademicStaffController::class, 'viewTasks'])->name('academic-staff.tasks.index');
+        Route::get('/tasks/{id}', [AcademicStaffController::class, 'show'])->name('academic-staff.tasks.show');
+        Route::get('/tasks/{id}/edit', [AcademicStaffController::class, 'edit'])->name('academic-staff.tasks.edit');
 });
+});
+
+
 
 require __DIR__.'/auth.php';

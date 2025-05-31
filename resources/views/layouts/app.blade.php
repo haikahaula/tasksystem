@@ -20,17 +20,24 @@
         <div class="min-h-screen">
             @include('layouts.navigation')
 
-            <!-- Custom Task Navigation -->
-            <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 shadow">
-                <div class="max-w-7xl mx-auto flex space-x-4">
+        <!-- Custom Task Navigation -->
+        <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 shadow">
+            <div class="max-w-7xl mx-auto flex space-x-4">
+                @if (request()->is('academic-staff/*'))
+                    <a href="{{ url('academic-staff/dashboard') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Dashboard</a>
+                    <a href="{{ url('academic-staff/view-tasks') }}" class="text-blue-600 dark:text-blue-400 hover:underline">View Tasks</a>
+                    <a href="{{ url('academic-staff/view-groups') }}" class="text-blue-600 dark:text-blue-400 hover:underline">View Groups</a>
+                @elseif (request()->is('academic-head/*'))
                     <a href="{{ route('tasks.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">All Tasks</a>
                     <a href="{{ route('tasks.create') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Create Task</a>
                     <a href="{{ route('groups.create') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Create Group</a>
-
-                    <a href="{{ route('groups.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Groups</a> 
-
-                </div>
-            </nav>
+                    <a href="{{ route('groups.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Groups</a>
+                @else
+                    <!-- Optional default nav -->
+                    <span class="text-gray-500">Select a dashboard</span>
+                @endif
+            </div>
+        </nav>
 
             <!-- Page Heading -->
             @isset($header)

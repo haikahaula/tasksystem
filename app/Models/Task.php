@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory; // ✅ Add this line
+use Illuminate\Database\Eloquent\Factories\HasFactory; 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Group;
+use App\Models\Comment;
+
 class Task extends Model
 {
     use HasFactory;
@@ -14,13 +18,20 @@ class Task extends Model
             'due_date',
             'document',
             'assigned_to_id',
-            'assigned_to_type'
+            'assigned_to_type',
+            'created_by'
         ];
 
     public function assignedTo()
     {
         return $this->morphTo();
     }
+
+        public function assignedBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
 
         public function comments()
     {
@@ -37,6 +48,4 @@ class Task extends Model
     {
             return $this->belongsTo(Group::class); // or belongsToMany if multiple groups
     }
-
-
 }

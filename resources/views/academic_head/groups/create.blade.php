@@ -20,15 +20,16 @@
         </div>
 
         <div class="mb-4">
-            <label for="users" class="block font-semibold">Team Members:</label>
-            <select name="users[]" multiple class="w-full border p-2 rounded">
+            <label class="block font-semibold mb-2">Team Members:</label>
+            <div class="grid grid-cols-2 gap-2">
                 @foreach($users as $user)
-                    <option value="{{ $user->id }}"
-                        {{ isset($group) && $group->users->contains($user->id) ? 'selected' : '' }}>
-                        {{ $user->name }}
-                    </option>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" name="users[]" value="{{ $user->id }}"
+                            {{ isset($group) && $group->users->contains($user->id) ? 'checked' : '' }}>
+                        <span>{{ $user->name }}</span>
+                    </label>
                 @endforeach
-            </select>
+            </div>
         </div>
 
         <div style="margin-top: 50px;">

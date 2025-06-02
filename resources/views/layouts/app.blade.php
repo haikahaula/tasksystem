@@ -11,7 +11,7 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <!-- Font Awesome CDN -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-yxQFHZwz5E2z2eR7LZbZoXU4y6Dd1E64UYOuypND+7HXc13+6hPb7JzrYx1Bd8O+HkJXzHtp2zpKtvwOAA6LVA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -25,8 +25,8 @@
             <div class="max-w-7xl mx-auto flex space-x-4">
                 @if (request()->is('academic-staff/*'))
                     <a href="{{ url('academic-staff/dashboard') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Dashboard</a>
-                    <a href="{{ url('academic-staff/tasks.show') }}" class="text-blue-600 dark:text-blue-400 hover:underline">View Tasks</a>
-                    <a href="{{ url('academic-staff/groups') }}" class="text-blue-600 dark:text-blue-400 hover:underline">View Groups</a>
+                    <a href="{{ route('academic-staff.tasks.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">View Tasks</a>
+                    <a href="{{ route('academic-staff.groups.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">View Groups</a>
                 @elseif (request()->is('academic-head/*'))
                     <a href="{{ url('academic-head/dashboard') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Dashboard</a>
                     <a href="{{ route('academic-head.tasks.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">All Tasks</a>

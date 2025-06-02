@@ -36,14 +36,19 @@ class AcademicStaffController extends Controller
     {
         $userId = Auth::id();
 
-        $task = Task::whereHas('users', function ($q) use ($userId) {
-                $q->where('user_id', $userId);
+        $task = Task::with(['users', 'group', 'comments'])
+            ->where(function ($q) use ($userId) {
+                $q->whereHas('users', function ($q) use ($userId) {
+                    $q->where('user_id', $userId);
+                })->orWhereHas('group.users', function ($q) use ($userId) {
+                    $q->where('user_id', $userId);
+                });
             })
-            ->orWhereHas('group.users', function ($q) use ($userId) {
-                $q->where('user_id', $userId);
-            })
-            ->with(['users', 'group', 'comments'])
-            ->findOrFail($id);
+            ->find($id);
+
+        if (!$task) {
+            abort(403, 'You are not authorized to view this task.');
+        }
 
         return view('academic_staff.tasks.show', compact('task'));
     }
@@ -63,6 +68,32 @@ class AcademicStaffController extends Controller
 
         return view('academic_staff.tasks.edit', compact('task'));
     }
+
+    public function update(Request $request, $id)   
+    {
+    $userId = Auth::id();
+
+    // Validate status input
+    $validated = $request->validate([
+        'status' => 'required|in:pending,in progress,finished',
+    ]);
+
+    // Check if user is allowed to update this task
+    $task = Task::where(function ($q) use ($userId) {
+            $q->whereHas('users', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })->orWhereHas('group.users', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+        })
+        ->findOrFail($id);
+
+    $task->status = $validated['status'];
+    $task->save();
+
+    return redirect()->route('academic-staff.tasks.index')->with('success', 'Task status updated.');
+    }
+
 
     // ---------------- Groups ----------------
 
@@ -91,4 +122,5 @@ class AcademicStaffController extends Controller
 
         return view('academic_staff.groups.show', compact('group'));
     }
+
 }

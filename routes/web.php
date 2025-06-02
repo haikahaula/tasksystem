@@ -30,10 +30,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/tasks', [AcademicStaffController::class, 'viewTasks'])->name('academic-staff.tasks.index');
         Route::get('/tasks/{task}', [AcademicStaffController::class, 'show'])->name('academic-staff.tasks.show');
         Route::get('/tasks/{task}/edit', [AcademicStaffController::class, 'edit'])->name('academic-staff.tasks.edit');
+        Route::put('/tasks/{task}', [AcademicStaffController::class, 'update'])->name('academic-staff.tasks.update');
 
         // Groups
         Route::get('/groups', [AcademicStaffController::class, 'viewGroups'])->name('academic-staff.groups.index');
         Route::get('/groups/{id}', [AcademicStaffController::class, 'showGroup'])->name('academic-staff.groups.show');
+
+        //comments
+        Route::resource('comments', CommentController::class)->only(['store', 'edit', 'update', 'destroy']);
+
     });
 
     //Academic Head routes

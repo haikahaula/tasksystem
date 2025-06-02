@@ -30,7 +30,7 @@ class CommentController extends Controller
             'content' => $validated['content'],
         ]);
 
-        return redirect()->back()->with('success', 'Comment added successfully.');
+        return redirect()->route('academic-staff.tasks.show', $validated['task_id'])->with('success', 'Comment added successfully.');
     }
 
     public function edit(Comment $comment)
@@ -45,7 +45,9 @@ class CommentController extends Controller
         $request->validate(['content' => 'required|string']);
         $comment->update(['content' => $request->content]);
 
-        return redirect()->route('academic-head.tasks.show', $comment->task_id)->with('success', 'Comment updated.');
+        $prefix = request()->segment(1);     
+        return redirect()->route("$prefix.tasks.show", $comment->task_id)
+                        ->with('success', 'Comment updated.');
     }
 
     public function destroy(Comment $comment)

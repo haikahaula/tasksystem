@@ -11,17 +11,26 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class CommentController extends Controller
 {
     use AuthorizesRequests;
-    public function store(Request $request, $taskId)
-    {
-        $request->validate(['content' => 'required|string']);
 
-        Comment::create([
-            'task_id' => $taskId,
-            'user_id' => Auth::id(),
-            'content' => $request->content,
+    public function create(Task $task)
+    {
+        return view('comments.create', compact('task'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'task_id' => 'required|exists:tasks,id',
+            'content' => 'required|string|max:1000',
         ]);
 
-        return redirect()->back()->with('success', 'Comment added.');
+        Comment::create([
+            'task_id' => $validated['task_id'],
+            'user_id' => Auth::id(),            
+            'content' => $validated['content'],
+        ]);
+
+        return redirect()->back()->with('success', 'Comment added successfully.');
     }
 
     public function edit(Comment $comment)
@@ -36,14 +45,13 @@ class CommentController extends Controller
         $request->validate(['content' => 'required|string']);
         $comment->update(['content' => $request->content]);
 
-        return redirect()->route('tasks.show', $comment->task_id)->with('success', 'Comment updated.');
+        return redirect()->route('academic-head.tasks.show', $comment->task_id)->with('success', 'Comment updated.');
     }
 
     public function destroy(Comment $comment)
     {
-        $this->authorize('delete', $comment); // Optional: use policy
+        $this->authorize('delete', $comment);
         $comment->delete();
-
         return redirect()->back()->with('success', 'Comment deleted.');
     }
 }

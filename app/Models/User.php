@@ -32,9 +32,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Group::class);
     }
 
-        public function tasks()
+    public function tasks()
     {
-        return $this->belongsToMany(Task::class);
+        return $this->belongsToMany(Task::class, 'task_user');
     }
 
 }

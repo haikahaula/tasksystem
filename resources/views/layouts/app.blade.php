@@ -25,13 +25,14 @@
             <div class="max-w-7xl mx-auto flex space-x-4">
                 @if (request()->is('academic-staff/*'))
                     <a href="{{ url('academic-staff/dashboard') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Dashboard</a>
-                    <a href="{{ url('academic-staff/tasks') }}" class="text-blue-600 dark:text-blue-400 hover:underline">View Tasks</a>
+                    <a href="{{ url('academic-staff/tasks.show') }}" class="text-blue-600 dark:text-blue-400 hover:underline">View Tasks</a>
                     <a href="{{ url('academic-staff/groups') }}" class="text-blue-600 dark:text-blue-400 hover:underline">View Groups</a>
                 @elseif (request()->is('academic-head/*'))
-                    <a href="{{ route('tasks.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">All Tasks</a>
-                    <a href="{{ route('tasks.create') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Create Task</a>
-                    <a href="{{ route('groups.create') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Create Group</a>
-                    <a href="{{ route('groups.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Groups</a>
+                    <a href="{{ url('academic-head/dashboard') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Dashboard</a>
+                    <a href="{{ route('academic-head.tasks.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">All Tasks</a>
+                    <a href="{{ route('academic-head.tasks.create') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Create Task</a>
+                    <a href="{{ route('academic-head.groups.create') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Create Group</a>
+                    <a href="{{ route('academic-head.groups.index') }}" class="text-blue-600 dark:text-blue-400 hover:underline">Groups</a>
                 @else
                     <span class="text-gray-500">Select a dashboard</span>
                 @endif

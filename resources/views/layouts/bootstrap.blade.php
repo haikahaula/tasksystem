@@ -29,10 +29,10 @@
                         <li class="nav-item"><a class="nav-link" href="{{ url('academic-staff/tasks') }}">View Tasks</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url('academic-staff/groups') }}">View Groups</a></li>
                     @elseif (request()->is('academic-head/*'))
-                        <li class="nav-item"><a class="nav-link" href="{{ route('tasks.index') }}">All Tasks</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('tasks.create') }}">Create Task</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('groups.create') }}">Create Group</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('groups.index') }}">Groups</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('academic-head/tasks.index') }}">All Tasks</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('academic-head/tasks.create') }}">Create Task</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('academic-head/groups.create') }}">Create Group</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('academic-head/groups.index') }}">Groups</a></li>
                     @else
                         <li class="nav-item"><span class="nav-link text-muted">Select a dashboard</span></li>
                     @endif

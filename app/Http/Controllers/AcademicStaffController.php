@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Task;
 use App\Models\Group;
-use App\Models\User;
 
 class AcademicStaffController extends Controller
 {
@@ -15,19 +14,57 @@ class AcademicStaffController extends Controller
         return view('academic_staff.dashboard');
     }
 
+    // ---------------- Tasks ----------------
+
     public function viewTasks()
     {
         $userId = Auth::id();
 
-        $tasks = Task::where('assigned_to_id', $userId)
+        $tasks = Task::whereHas('users', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
             ->orWhereHas('group.users', function ($q) use ($userId) {
                 $q->where('user_id', $userId);
             })
-            ->with(['group', 'assignedBy'])
+            ->with(['users', 'group', 'comments']) // eager-load if needed
             ->get();
 
-        return view('academic_staff.tasks', compact('tasks'));
+        return view('academic_staff.tasks.index', compact('tasks'));
     }
+
+    public function show($id)
+    {
+        $userId = Auth::id();
+
+        $task = Task::whereHas('users', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->orWhereHas('group.users', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->with(['users', 'group', 'comments'])
+            ->findOrFail($id);
+
+        return view('academic_staff.tasks.show', compact('task'));
+    }
+
+    public function edit($id)
+    {
+        $userId = Auth::id();
+
+        $task = Task::whereHas('users', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->orWhereHas('group.users', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->with(['users', 'group'])
+            ->findOrFail($id);
+
+        return view('academic_staff.tasks.edit', compact('task'));
+    }
+
+    // ---------------- Groups ----------------
 
     public function viewGroups()
     {
@@ -49,7 +86,7 @@ class AcademicStaffController extends Controller
         $group = Group::whereHas('users', function ($q) use ($userId) {
                 $q->where('user_id', $userId);
             })
-            ->with(['users', 'creator'])
+            ->with(['users', 'creator', 'tasks']) // if you want to show tasks as well
             ->findOrFail($id);
 
         return view('academic_staff.groups.show', compact('group'));

@@ -3,7 +3,7 @@
 @section('content')
     <h1 class="text-2xl font-bold mb-6">{{ isset($group) ? 'Update Group' : 'Create Group' }}</h1>
 
-    <form method="POST" action="{{ isset($group) ? route('groups.update', $group->id) : route('groups.store') }}">
+    <form method="POST" action="{{ isset($group) ? route('academic-head.groups.update', $group->id) : route('academic-head.groups.store') }}">
         @csrf
         @if(isset($group))
             @method('PUT')

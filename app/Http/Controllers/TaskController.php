@@ -37,7 +37,7 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'assigned_user_id' => 'nullable|exists:users,id',
-            'assigned_group_id' => 'nullable|exists:groups,id',
+            'group_id' => 'nullable|exists:groups,id',
             'due_date' => 'required|date',
             'document' => 'nullable|file|mimes:pdf,docx,txt,jpg,png|max:2048',
         ]);

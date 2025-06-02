@@ -9,9 +9,15 @@ class Comment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['group_id', 'user_id', 'body'];
+    protected $fillable = ['task_id', 'user_id', 'content'];
 
     // A comment belongs to a group
+
+    public function task()
+    {
+        return $this->belongsTo(Task::class);
+    }
+
     public function group()
     {
         return $this->belongsTo(Group::class);
@@ -22,4 +28,7 @@ class Comment extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
+
+
 }

@@ -18,7 +18,8 @@
             <label>Users:</label>
             <select name="assigned_user_id[]" multiple {{ $task->assigned_group_id ? 'disabled' : '' }}>
                 @foreach($users as $user)
-                    <option value="{{ $user->id }}" {{ in_array($user->id, $task->users->pluck('id')->toArray()) ? 'selected' : '' }}>
+                    <option value="{{ $user->id }}" 
+                        {{ in_array($user->id, $task->users->pluck('id')->toArray()) ? 'selected' : '' }}>
                         {{ $user->name }}
                     </option>
                 @endforeach
@@ -46,7 +47,9 @@
             <a href="{{ asset('storage/' . $task->document) }}" target="_blank">Current Document</a><br>
         @endif
 
-        <button type="submit">Update Task</button>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Update Task
+        </button>
     </form>
 
     <script>

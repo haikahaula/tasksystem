@@ -1,4 +1,4 @@
-<form action="{{ route('comments.store') }}" method="POST" class="mt-4">
+<form method="POST" action="{{ route($baseRoute . '.comments.store') }}">
     @csrf
     <input type="hidden" name="task_id" value="{{ $task->id }}">
 

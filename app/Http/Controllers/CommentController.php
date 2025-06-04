@@ -19,20 +19,22 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'task_id' => 'required|exists:tasks,id',
             'content' => 'required|string|max:1000',
         ]);
 
-        Comment::create([
-            'task_id' => $validated['task_id'],
-            'user_id' => Auth::id(),            
-            'content' => $validated['content'],
-        ]);
+        $comment = new Comment();
+        $comment->task_id = $request->task_id;
+        $comment->user_id = Auth::id();
+        $comment->content = $request->content;
+        $comment->save();
 
-        return redirect()->route('academic-staff.tasks.show', $validated['task_id'])->with('success', 'Comment added successfully.');
+
+        // Redirect to the passed redirect URL or fallback
+        return redirect($request->redirect_url ?? '/dashboard')->with('success', 'Comment added successfully.');
     }
-
+    
     public function edit(Comment $comment)
     {
         return view('comments.edit', compact('comment'));

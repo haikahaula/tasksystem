@@ -21,6 +21,7 @@
                 <th class="px-4 py-2 border">Title</th>
                 <th class="px-4 py-2 border">Assigned To</th>
                 <th class="px-4 py-2 border">Due Date</th>
+                <th class="px-4 py-2 border">Status</th> <!-- Added Status header -->
                 <th class="px-4 py-2 border">Actions</th>
             </tr>
         </thead>
@@ -45,6 +46,9 @@
                         @endif
                     </td>
                     <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($task->due_date)->format('Y-m-d') }}</td>
+                    <td class="px-4 py-2 border">
+                        {{ ucfirst($task->status) }}  <!-- Display status as text -->
+                    </td>
                     <td class="px-4 py-2 border space-x-3 whitespace-nowrap">
                         <a href="{{ route('academic-head.tasks.show', $task->id) }}" class="text-blue-600 underline hover:text-blue-800">View</a>
                         <a href="{{ route('academic-head.tasks.edit', $task->id) }}" class="text-yellow-600 underline hover:text-yellow-800">Edit</a>
@@ -57,9 +61,22 @@
                         </form>
                     </td>
                 </tr>
+                <tr>
+                    <td colspan="6" class="bg-gray-50 px-4 py-3">
+                        <form action="{{ route('academic-head.comments.store') }}" method="POST" class="flex flex-col md:flex-row md:items-center md:space-x-4">
+                            @csrf
+                            <input type="hidden" name="task_id" value="{{ $task->id }}">
+                            <textarea name="content" rows="2" placeholder="Add a comment..." required
+                                class="w-full border rounded p-2 resize-none md:flex-1 mb-2 md:mb-0"></textarea>
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                                Submit Comment
+                            </button>
+                        </form>
+                    </td>
+                </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center py-4 text-gray-500">No tasks found.</td>
+                    <td colspan="6" class="text-center py-4 text-gray-500">No tasks found.</td>
                 </tr>
             @endforelse
         </tbody>

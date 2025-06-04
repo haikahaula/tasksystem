@@ -33,9 +33,9 @@
 
                 @if (Auth::id() === $comment->user_id)
                     <div class="mt-2">
-                        <a href="{{ route('comments.edit', $comment) }}" class="text-blue-600 text-sm mr-2">Edit</a>
+                        <a href="{{ route('academic-staff.comments.edit', $comment) }}" class="text-blue-600 text-sm mr-2">Edit</a>
 
-                        <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline">
+                        <form action="{{ route('academic-staff.comments.destroy', $comment) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 text-sm" onclick="return confirm('Delete this comment?')">Delete</button>
@@ -47,6 +47,6 @@
             <p>No comments yet.</p>
         @endforelse
 
-        @include('comments._form', ['task' => $task])
+        @include('comments._form', ['task' => $task, 'baseRoute' => 'academic-staff'])
 </div>
 @endsection

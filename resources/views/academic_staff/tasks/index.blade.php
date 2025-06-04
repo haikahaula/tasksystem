@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold mb-6">Tasks for Academic Staff</h1>
+    <h1 class="text-2xl font-bold mb-6">My Tasks</h1>
 
     <table class="w-full table-auto border border-gray-300">
         <thead class="bg-gray-100">
@@ -62,17 +62,13 @@
                         @endif
                     </p>
 
-                    <form action="{{ route('academic-staff.tasks.update', $task->id) }}" method="POST" class="mt-4">
+                    <form action="{{ route('academic-staff.comments.store') }}" method="POST" class="mt-2">
                         @csrf
-                        @method('PUT')
-                        <label for="status" class="block font-semibold mb-1">Status:</label>
-                        <select name="status" id="status" class="border rounded w-full p-2">
-                            <option value="pending" {{ $task->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="in progress" {{ $task->status == 'in progress' ? 'selected' : '' }}>In Progress</option>
-                            <option value="finished" {{ $task->status == 'finished' ? 'selected' : '' }}>Finished</option>
-                        </select>
-                        <button type="submit" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">Update Task</button>
+                        <input type="hidden" name="task_id" value="{{ $task->id }}">
+                        <textarea name="content" class="w-full border p-2 rounded mb-2" rows="2" placeholder="Add a comment..." required></textarea>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">Submit Comment</button>
                     </form>
+
 
                     <div class="mt-4">
                         <h3 class="font-semibold mb-2">Comments</h3>
@@ -85,7 +81,7 @@
                             <p class="text-sm text-gray-500">No comments yet.</p>
                         @endforelse
 
-                        <form action="{{ route('comments.store') }}" method="POST" class="mt-2">
+                            <form action="{{ route('academic-staff.comments.store') }}" method="POST">
                             @csrf
                             <input type="hidden" name="task_id" value="{{ $task->id }}">
                             <textarea name="content" class="w-full border p-2 rounded mb-2" rows="2" placeholder="Add a comment..." required></textarea>

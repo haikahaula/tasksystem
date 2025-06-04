@@ -20,7 +20,6 @@ class AcademicHeadController extends Controller
 
     public function viewTasks()
     {
-        // Load assigned users (many) and assigned group (single)
         $tasks = Task::with(['users', 'assignedGroup'])->get();
         return view('academic_head.tasks.index', compact('tasks'));
     }
@@ -44,7 +43,6 @@ class AcademicHeadController extends Controller
             'document' => 'nullable|file|mimes:pdf,doc,docx,txt|max:2048',
         ]);
 
-        // Validate exclusive assignment: users or group, not both
         if (!empty($validated['assigned_user_id']) && !empty($validated['group_id'])) {
             return back()->withErrors('Please assign the task to either users or a group, not both.')->withInput();
         }
@@ -69,8 +67,8 @@ class AcademicHeadController extends Controller
 
     public function show(Task $task)
     {
-        $task->load(['users', 'assignedGroup']);
-        return view('academic_head.tasks.show', compact('task'));
+        $task->load(['users', 'assignedGroup', 'comments.user']);
+        return view('academic_head.tasks.show', compact('task')); // ← fixed path
     }
 
     public function edit(Task $task)
@@ -114,7 +112,6 @@ class AcademicHeadController extends Controller
         if (!empty($validated['assigned_user_id'])) {
             $task->users()->sync($validated['assigned_user_id']);
         } else {
-            // If no users assigned, detach all users from this task
             $task->users()->detach();
         }
 
@@ -139,7 +136,7 @@ class AcademicHeadController extends Controller
     public function createGroup()
     {
         $users = User::all();
-        return view('academic_head.groups.create', compact('users'));
+        return view('academic_head.groups.form', ['users' => $users]);
     }
 
     public function storeGroup(Request $request)
@@ -167,7 +164,7 @@ class AcademicHeadController extends Controller
     {
         $group = Group::with('users')->findOrFail($id);
         $users = User::all();
-        return view('academic_head.groups.edit', compact('group', 'users'));
+        return view('academic_head.groups.form', compact('group', 'users'));
     }
 
     public function updateGroup(Request $request, $id)
@@ -190,7 +187,7 @@ class AcademicHeadController extends Controller
     public function destroyGroup($id)
     {
         $group = Group::findOrFail($id);
-        $group->users()->detach(); // remove group members
+        $group->users()->detach();
         $group->delete();
         return redirect()->route('academic-head.groups.index')->with('success', 'Group deleted successfully.');
     }
@@ -207,7 +204,7 @@ class AcademicHeadController extends Controller
         Comment::create([
             'task_id' => $validated['task_id'],
             'user_id' => Auth::id(),
-            'content' => $validated['content'],
+            'content' => $validated['content'], // Match your database field
         ]);
 
         return redirect()->back()->with('success', 'Comment added successfully.');
@@ -224,10 +221,18 @@ class AcademicHeadController extends Controller
         $comment = Comment::findOrFail($id);
 
         $validated = $request->validate([
-            'content' => 'required|string',
+            'content' => 'required|string|max:1000', // Make sure it matches the form input
         ]);
 
         $comment->update($validated);
         return redirect()->back()->with('success', 'Comment updated successfully.');
+    }
+
+    public function destroyComment($id)
+    {
+        $comment = Comment::findOrFail($id);
+        $comment->delete();
+
+        return redirect()->back()->with('success', 'Comment deleted successfully.');
     }
 }

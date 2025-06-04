@@ -1,11 +1,8 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Academic Staff Dashboard
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-4">
-        <p>Welcome to the dashboard for Academic Staff.</p>
+@section('content')
+    <div class="container">
+        <h1>Academic Staff Dashboard</h1>
+        <p>Welcome to the Academic Staff Dashboard.</p>
     </div>
-</x-app-layout>
+@endsection

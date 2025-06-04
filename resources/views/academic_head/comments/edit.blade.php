@@ -1,27 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Edit Comment</h1>
+<div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-xl font-bold mb-4">Edit Comment</h2>
 
-    <form action="{{ route('academic-head.comments.update', $comment->id) }}" method="POST">
+    <form method="POST" action="{{ route('academic-head.comments.update', $comment->id) }}">
         @csrf
         @method('PUT')
 
-        <div>
-            <label for="content">Comment:</label><br>
-            <textarea name="content" id="content" rows="4" class="form-control" required>{{ $comment->content }}</textarea>
+        <textarea name="content" rows="5" class="w-full border rounded p-2">{{ old('content', $comment->content) }}</textarea>
+        @error('content')
+            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+        @enderror
+
+        <div class="mt-4 flex justify-between">
+            <a href="{{ url()->previous() }}" class="text-blue-600 hover:underline">Cancel</a>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Update</button>
         </div>
 
-        <br>
-
-        <button type="submit"
-            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-            Update Comment
-        </button>
-
-        <a href="{{ route('academic-head.tasks.show', $comment->task_id) }}"
-            class="ml-2 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition">
-            Cancel
-        </a>
+        <input type="hidden" name="redirect_url" value="{{ url()->previous() }}">
     </form>
+</div>
 @endsection

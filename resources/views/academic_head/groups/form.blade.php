@@ -34,7 +34,7 @@
 
         <div style="margin-top: 50px;">
             <button type="submit" style="background-color: rgb(11, 91, 195); color: white; padding: 10px;">
-                {{ isset($group) && $group ? 'Update Group' : 'Create Group' }}
+                {{ isset($group) ? 'Update Group' : 'Create Group' }}
             </button>  
         </div>
     </form>

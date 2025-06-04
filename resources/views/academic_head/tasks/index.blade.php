@@ -61,19 +61,6 @@
                         </form>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="6" class="bg-gray-50 px-4 py-3">
-                        <form action="{{ route('academic-head.comments.store') }}" method="POST" class="flex flex-col md:flex-row md:items-center md:space-x-4">
-                            @csrf
-                            <input type="hidden" name="task_id" value="{{ $task->id }}">
-                            <textarea name="content" rows="2" placeholder="Add a comment..." required
-                                class="w-full border rounded p-2 resize-none md:flex-1 mb-2 md:mb-0"></textarea>
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                                Submit Comment
-                            </button>
-                        </form>
-                    </td>
-                </tr>
             @empty
                 <tr>
                     <td colspan="6" class="text-center py-4 text-gray-500">No tasks found.</td>

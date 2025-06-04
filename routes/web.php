@@ -51,7 +51,7 @@ Route::middleware('auth')->group(function () {
     });
 
     //Academic Head routes
-Route::prefix('academic-head')->name('academic-head.')->middleware(['auth'])->group(function () {
+    Route::prefix('academic-head')->name('academic-head.')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AcademicHeadController::class, 'dashboard'])->name('dashboard');
 
     // Tasks

@@ -7,6 +7,9 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\Group;
 use Illuminate\Support\Facades\Storage;
+use App\Notifications\TaskAssigned;
+use Illuminate\Support\Facades\Auth;
+
 
 class TaskController extends Controller
 {
@@ -43,6 +46,8 @@ class TaskController extends Controller
         ]);
 
         $data = $request->only(['title', 'description', 'due_date']);
+        $data['created_by'] = Auth::id(); // academic head or whoever created
+        $data['status'] = 'not started';
 
         if ($request->hasFile('document')) {
             $data['document'] = $request->file('document')->store('documents', 'public');
@@ -57,12 +62,19 @@ class TaskController extends Controller
             $data['assigned_to_type'] = User::class;
         }
 
-        Task::create($data);
+        $task = Task::create($data);
 
-        return redirect()->route('tasks.index')->with('success', 'Task created.');
-    }    /**
-     * Display the specified resource.
-     */
+        // Notify the assigned user
+        if (isset($data['assigned_to_id']) && $data['assigned_to_type'] === User::class) {
+            $user = User::find($data['assigned_to_id']);
+            if ($user) {
+                $user->notify(new TaskAssigned($task));
+            }
+        }
+
+        return redirect()->route('tasks.index')->with('success', 'Task created and notification sent.');
+    }
+    
     public function show(string $id)
     {
 
@@ -85,23 +97,32 @@ class TaskController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Task $task)
-{
-    $data = $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'assigned_to_id' => 'required|exists:users,id',
-        'due_date' => 'required|date',
-        'document' => 'nullable|file|mimes:pdf,docx,txt,jpg,png|max:2048',
-    ]);
+    {
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'assigned_to_id' => 'required|exists:users,id',
+            'due_date' => 'required|date',
+            'document' => 'nullable|file|mimes:pdf,docx,txt,jpg,png|max:2048',
+            'status' => 'nullable|string', // add if you're allowing status update
+        ]);
 
-    if ($request->hasFile('document')) {
-        $data['document'] = $request->file('document')->store('documents', 'public');
+        if ($request->hasFile('document')) {
+            $data['document'] = $request->file('document')->store('documents', 'public');
+        }
+
+        $task->update($data);
+
+        // Notify task creator if status changed
+        if ($request->has('status') && $task->created_by) {
+            $creator = User::find($task->created_by);
+            if ($creator && $task->status !== $task->getOriginal('status')) {
+                $creator->notify(new \App\Notifications\TaskStatusChanged($task));
+            }
+        }
+
+        return redirect()->route('tasks.index')->with('success', 'Task updated.');
     }
-
-    $task->update($data);
-
-    return redirect()->route('tasks.index')->with('success', 'Task updated.');
-}
 
     /**
      * Remove the specified resource from storage.

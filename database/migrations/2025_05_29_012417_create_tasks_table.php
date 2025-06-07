@@ -13,14 +13,16 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('assigned_to_id')->nullable();
-            $table->string('assigned_to_type')->nullable();
             $table->string('title');
             $table->text('description')->nullable();
+            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('assigned_to_id')->nullable();
+            $table->string('assigned_to_type')->nullable();
+            $table->unsignedBigInteger('group_id')->nullable();
             $table->date('due_date');
             $table->string('document')->nullable();
+            $table->string('status')->default('not started');
             $table->timestamps();
-            $table->foreign('assigned_to_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

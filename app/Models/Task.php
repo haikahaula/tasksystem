@@ -8,6 +8,21 @@ use App\Models\User;
 use App\Models\Group;
 use App\Models\Comment;
 
+/**
+ * App\Models\Task
+ *
+ * @property int $id
+ * @property string $title
+ * @property string|null $description
+ * @property int|null $created_by
+ * @property int|null $assigned_to_id
+ * @property string|null $assigned_to_type
+ * @property int|null $group_id
+ * @property string $due_date
+ * @property string|null $document
+ * @property string $status
+ */
+
 class Task extends Model
 {
     use HasFactory;
@@ -15,12 +30,13 @@ class Task extends Model
     protected $fillable = [
         'title',
         'description',
+        'created_by',
         'assigned_to_id',
+        'assigned_to_type',
+        'group_id',
         'due_date',
         'document',
-        'group_id',
         'status',
-        'created_by',
     ];
 
     // Many users assigned to this task (pivot table task_user)

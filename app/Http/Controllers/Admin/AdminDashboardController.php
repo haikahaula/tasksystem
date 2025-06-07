@@ -16,10 +16,14 @@ class AdminDashboardController extends Controller
     }
 
     //Notifications
-        public function sendSystemUpdate(Request $request)
+    public function notifySystemUpdate(Request $request)
     {
-        $users = User::whereIn('role', ['academic_head', 'academic_staff'])->get();
-        Notification::send($users, new SystemUpdate($request->input('details')));
+        $message = $request->input('message'); // system update message
+        $users = User::all(); // or filter by role
+
+        foreach ($users as $user) {
+            $user->notify(new SystemUpdate($message));
+        }
 
         return back()->with('success', 'System update notification sent.');
     }

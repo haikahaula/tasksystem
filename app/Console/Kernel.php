@@ -2,6 +2,10 @@
 
 namespace App\Console;
 
+use App\Models\Task;
+use App\Models\User;
+use App\Notifications\TaskDueReminder;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -17,9 +21,20 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
-    protected function schedule(Schedule $schedule): void
+    protected function schedule(Schedule $schedule)
     {
-        $schedule->command('tasks:due-reminders')->daily(); // schedule it daily
+        $schedule->call(function () {
+            $tasks = Task::whereDate('due_date', now()->addDays(2))
+                        ->where('status', '!=', 'finished')
+                        ->get();
+
+            foreach ($tasks as $task) {
+                $user = User::find($task->assigned_to);
+                if ($user) {
+                    $user->notify(new TaskDueReminder($task));
+                }
+            }
+        })->dailyAt('08:00');
     }
 
     /**

@@ -7,131 +7,129 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\Group;
 use Illuminate\Support\Facades\Storage;
-use App\Notifications\TaskAssigned;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Log;
+use App\Notifications\TaskAssignedNotification;
+use App\Notifications\TaskStatusUpdatedNotification;
 
 class TaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $tasks = Task::with('assignedTo')->get();
-        return view('tasks.index', compact('tasks'));    }
-    
+        return view('tasks.index', compact('tasks'));
+    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $users = User::all();
         $groups = Group::all();
         return view('tasks.create', compact('users', 'groups'));
     }
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'assigned_user_id' => 'nullable|exists:users,id',
-            'group_id' => 'nullable|exists:groups,id',
+            'assigned_to_id' => 'nullable|exists:users,id',
+            'assigned_group_id' => 'nullable|exists:groups,id',
             'due_date' => 'required|date',
             'document' => 'nullable|file|mimes:pdf,docx,txt,jpg,png|max:2048',
         ]);
 
         $data = $request->only(['title', 'description', 'due_date']);
-        $data['created_by'] = Auth::id(); // academic head or whoever created
+        $data['created_by'] = Auth::id();
         $data['status'] = 'not started';
 
         if ($request->hasFile('document')) {
             $data['document'] = $request->file('document')->store('documents', 'public');
         }
 
-        // Determine the assignee type
-        if ($request->assigned_user_id) {
-            $data['assigned_to_id'] = $request->assigned_user_id;
+        if ($request->assigned_to_id) {
+            $data['assigned_to_id'] = $request->assigned_to_id;
             $data['assigned_to_type'] = User::class;
         } elseif ($request->assigned_group_id) {
             $data['assigned_to_id'] = $request->assigned_group_id;
-            $data['assigned_to_type'] = User::class;
+            $data['assigned_to_type'] = Group::class;
         }
 
         $task = Task::create($data);
 
-        // Notify the assigned user
-        if (isset($data['assigned_to_id']) && $data['assigned_to_type'] === User::class) {
-            $user = User::find($data['assigned_to_id']);
-            if ($user) {
-                $user->notify(new TaskAssigned($task));
+        // Notify the assigned user (if individual assignment)
+        if ($task->assigned_to_type === User::class) {
+            $staff = User::find($task->assigned_to_id);
+            if ($staff) {
+                $staff->notify(new TaskAssignedNotification($task));
             }
         }
 
         return redirect()->route('tasks.index')->with('success', 'Task created and notification sent.');
     }
-    
+
     public function show(string $id)
     {
-
         $task = Task::with(['assignedTo', 'comments.user'])->findOrFail($id);
-        return view('tasks.show', compact('task'));    
+        return view('tasks.show', compact('task'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $task = Task::findOrFail($id);
         $users = User::all();
         $groups = Group::all();
+
         return view('tasks.edit', compact('task', 'users', 'groups'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Task $task)
-    {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'assigned_to_id' => 'required|exists:users,id',
-            'due_date' => 'required|date',
-            'document' => 'nullable|file|mimes:pdf,docx,txt,jpg,png|max:2048',
-            'status' => 'nullable|string', // add if you're allowing status update
-        ]);
+public function update(Request $request, Task $task)
+{
+    $originalStatus = $task->status;
 
-        if ($request->hasFile('document')) {
-            $data['document'] = $request->file('document')->store('documents', 'public');
-        }
+    // Validate all fields, but status is nullable (can be updated or not)
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'assigned_to_id' => 'nullable|exists:users,id', // nullable so it can stay unchanged
+        'due_date' => 'required|date',
+        'status' => 'nullable|string|in:pending,in progress,finished',
+        'document' => 'nullable|file|mimes:pdf,docx,txt,jpg,png|max:2048',
+    ]);
 
-        $task->update($data);
+    $data = $request->only(['title', 'description', 'assigned_to_id', 'due_date', 'status']);
 
-        // Notify task creator if status changed
-        if ($request->has('status') && $task->created_by) {
-            $creator = User::find($task->created_by);
-            if ($creator && $task->status !== $task->getOriginal('status')) {
-                $creator->notify(new \App\Notifications\TaskStatusChanged($task));
-            }
-        }
-
-        return redirect()->route('tasks.index')->with('success', 'Task updated.');
+    if ($request->hasFile('document')) {
+        $data['document'] = $request->file('document')->store('documents', 'public');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // Update task
+    $task->update($data);
+
+    // Notify new assignee if changed
+    if ($request->assigned_to_id && $request->assigned_to_id != $task->getOriginal('assigned_to_id')) {
+        $newAssignee = User::find($request->assigned_to_id);
+        if ($newAssignee) {
+            $newAssignee->notify(new TaskAssignedNotification($task));
+        }
+    }
+
+    // Notify creator if status changed
+    if (isset($data['status']) && $originalStatus !== $data['status'] && $task->created_by) {
+        $creator = User::find($task->created_by);
+        if ($creator) {
+            $creator->notify(new TaskStatusUpdatedNotification($task, Auth::user()));
+        }
+
+        Log::info("Task status changed from '{$originalStatus}' to '{$data['status']}' for task ID: {$task->id}");
+    }
+
+    return redirect()->back()->with('success', 'Task updated successfully.');
+}
+
     public function destroy(string $id)
     {
         $task = Task::findOrFail($id);
 
-        // Optional: delete the associated file
         if ($task->document) {
             Storage::disk('public')->delete($task->document);
         }

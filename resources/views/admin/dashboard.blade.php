@@ -5,6 +5,6 @@
         <h1>Admin Dashboard</h1>
         <p>Welcome to the Admin Dashboard.</p>
 
-        <x-reminder-logs />
+        
     </div>
 @endsection

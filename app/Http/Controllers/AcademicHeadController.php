@@ -37,13 +37,13 @@ class AcademicHeadController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'due_date' => 'required|date',
-            'assigned_user_id' => 'nullable|array',
-            'assigned_user_id.*' => 'exists:users,id',
+            'assigned_to_id' => 'nullable|array',
+            'assigned_to_id.*' => 'exists:users,id',
             'group_id' => 'nullable|exists:groups,id',
             'document' => 'nullable|file|mimes:pdf,doc,docx,txt|max:2048',
         ]);
 
-        if (!empty($validated['assigned_user_id']) && !empty($validated['group_id'])) {
+        if (!empty($validated['assigned_to_id']) && !empty($validated['group_id'])) {
             return back()->withErrors('Please assign the task to either users or a group, not both.')->withInput();
         }
 
@@ -58,8 +58,8 @@ class AcademicHeadController extends Controller
             'created_by' => Auth::id(),
         ]);
 
-        if (!empty($validated['assigned_user_id'])) {
-            $task->users()->sync($validated['assigned_user_id']);
+        if (!empty($validated['assigned_to_id'])) {
+            $task->users()->sync($validated['assigned_to_id']);
         }
 
         return redirect()->route('academic-head.tasks.index')->with('success', 'Task created successfully.');
@@ -87,13 +87,13 @@ class AcademicHeadController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'due_date' => 'nullable|date',
-            'assigned_user_id' => 'nullable|array',
-            'assigned_user_id.*' => 'exists:users,id',
+            'assigned_to_id' => 'nullable|array',
+            'assigned_to_id.*' => 'exists:users,id',
             'group_id' => 'nullable|exists:groups,id',
             'document' => 'nullable|file|mimes:pdf,doc,docx,txt|max:2048',
         ]);
 
-        if (!empty($validated['assigned_user_id']) && !empty($validated['group_id'])) {
+        if (!empty($validated['assigned_to_id']) && !empty($validated['group_id'])) {
             return back()->withErrors('Please assign the task to either users or a group, not both.')->withInput();
         }
 
@@ -109,8 +109,8 @@ class AcademicHeadController extends Controller
             'document' => $validated['document'] ?? $task->document,
         ]);
 
-        if (!empty($validated['assigned_user_id'])) {
-            $task->users()->sync($validated['assigned_user_id']);
+        if (!empty($validated['assigned_to_id'])) {
+            $task->users()->sync($validated['assigned_to_id']);
         } else {
             $task->users()->detach();
         }

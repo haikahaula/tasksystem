@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CommentController;
@@ -77,6 +78,13 @@ Route::middleware('auth')->group(function () {
         ->only(['store', 'edit', 'update', 'destroy'])
         ->names('comments');
     });
+
+    //notifications
+    Route::post('/notifications/mark-all-read', function () {
+    Auth::user()->unreadNotifications->markAsRead();    
+    return response()->json(['status' => 'ok']);
+    })->name('notifications.markAllRead');
+
 
 });
 require __DIR__.'/auth.php';

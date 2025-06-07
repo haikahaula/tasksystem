@@ -25,34 +25,57 @@
 
     <!-- Notifications -->
     @auth
-        <div class="container mt-3 text-end me-4">
-            <div class="dropdown d-inline-block">
-                <a class="btn position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                        class="bi bi-bell" viewBox="0 0 16 16">
-                        <path d="M8 16a2 2 0 0 0 1.985-1.75H6.015A2 2 0 0 0 8 16zm.104-14.59a1 1 0 1 1-1.208 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 2.417-1.336 3.566-.26.373-.13.89.283 1.106.318.168.737.091.969-.185C3.763 9.425 4 8.707 4 8V6a4 4 0 0 1 8 0v2c0 .707.237 1.425.584 1.487.232.276.651.353.969.185.413-.216.543-.733.283-1.106C13.5 8.417 13 7.098 13 6a5.002 5.002 0 0 0-4.896-4.59z"/>
-                    </svg>
-                    @if(auth()->user()->unreadNotifications->count() > 0)
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ auth()->user()->unreadNotifications->count() }}
-                            <span class="visually-hidden">unread messages</span>
-                        </span>
-                    @endif
-                </a>
+        <div class="relative inline-block text-left">
+            <button id="notificationToggle" class="relative inline-flex items-center justify-center w-10 h-10 bg-white rounded-full hover:bg-gray-100 focus:outline-none">
+                🔔
+                @if (auth()->user()->unreadNotifications->count())
+                    <span class="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-500"></span>
+                @endif
+            </button>
 
-                <ul class="dropdown-menu dropdown-menu-end">
-                    @forelse(auth()->user()->unreadNotifications as $notification)
-                        <li>
-                            <a class="dropdown-item" href="{{ route('academic-staff.tasks.show', $notification->data['task_id']) }}">
-                                {{ $notification->data['message'] }}
-                            </a>
-                        </li>
+            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                <div class="p-3 border-b font-semibold text-gray-700">
+                    Notifications
+                    <button class="float-right text-sm text-blue-500 hover:underline" onclick="markAllRead()">Mark all as read</button>
+                </div>
+                <div class="max-h-96 overflow-y-auto">
+                    @forelse (auth()->user()->unreadNotifications as $notification)
+                        <div class="px-4 py-3 hover:bg-gray-100 border-b">
+                            <div class="text-sm font-semibold text-gray-800">{{ $notification->data['title'] }}</div>
+                            <div class="text-sm text-gray-600">{{ $notification->data['message'] }}</div>
+                            @if (isset($notification->data['task_id']))
+                                <a href="{{ route('tasks.show', $notification->data['task_id']) }}" class="text-blue-500 text-sm hover:underline">View Task</a>
+                            @endif
+                        </div>
                     @empty
-                        <li><span class="dropdown-item">No new notifications</span></li>
+                        <div class="px-4 py-3 text-gray-500 text-sm text-center">
+                            No new notifications
+                        </div>
                     @endforelse
-                </ul>
+                </div>
             </div>
         </div>
+
+        <script>
+            const toggleBtn = document.getElementById('notificationToggle');
+            const dropdown = document.getElementById('notificationDropdown');
+
+            toggleBtn.addEventListener('click', () => {
+                dropdown.classList.toggle('hidden');
+            });
+
+            function markAllRead() {
+                fetch("{{ route('notifications.markAllRead') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                }).then(() => {
+                    window.location.reload();
+                });
+            }
+        </script>
     @endauth
 
     <!-- Page Heading -->

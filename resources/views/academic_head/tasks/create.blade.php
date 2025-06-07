@@ -36,13 +36,13 @@
         </div>
 
         <div class="mb-4">
-            <label class="block font-semibold mb-1">Assign to Users</label>
+            <label for="assigned_to_id" class="block font-semibold mb-1">Assign to Users</label>
             <small class="text-gray-600">Select one or more users</small>
-            <select name="assigned_user_id[]" multiple
+            <select name="assigned_to_id[]" multiple
                 class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
                 @foreach ($users as $user)
-                    <option value="{{ $user->id }}" @if(collect(old('assigned_user_id'))->contains($user->id)) selected @endif>
+                    <option value="{{ $user->id }}" @if(collect(old('assigned_to_id'))->contains($user->id)) selected @endif>
                         {{ $user->name }} ({{ $user->email }})
                     </option>
                 @endforeach
